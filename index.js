@@ -28,6 +28,8 @@ app.use(
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+app.use("/api", require("./routes/crypto.route"));
+
 app.listen(PORT, () => {
 	console.log(`Server is running on Port: ${PORT}`);
 });
