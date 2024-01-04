@@ -55,7 +55,46 @@ const getCryptoList = async (req, res) => {
 	}
 };
 
-const convertCryptoToFiat = async (req, res) => {};
+const convertCryptoToFiat = async (req, res) => {
+	try {
+		const { crypto, fiat, amount } = req.query;
+
+		if (!crypto || !fiat || !amount) {
+			throw new Error("Bad request");
+		}
+
+		const response = await axios.get(
+			"https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest",
+			{
+				params: {
+					symbol: crypto,
+					convert: fiat,
+				},
+				headers: {
+					"X-CMC_PRO_API_KEY": process.env.COINMARKETCAP_API_KEY,
+				},
+			}
+		);
+
+		const data = response.data.data;
+		const quote = Object.values(data)[0][0].quote;
+		const price = Object.values(quote)[0].price;
+		const convertedAmount = amount * price.toFixed(4);
+
+		res.json({
+			convertedAmount,
+			fiat,
+		});
+	} catch (error) {
+		console.log(error);
+		res
+			.json({
+				error: true,
+				errorText: error.message,
+			})
+			.status(400);
+	}
+};
 
 module.exports = {
 	getFiatList,
