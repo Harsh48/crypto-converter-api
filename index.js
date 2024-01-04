@@ -8,7 +8,7 @@ const app = express();
 
 let whitelist = [
 	"http://localhost:5173",
-	"https://crypto-convertor-chi.vercel.app",
+	"https://crypto-converter-ecru.vercel.app",
 ];
 app.use(
 	cors({
