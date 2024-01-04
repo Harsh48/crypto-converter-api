@@ -1,3 +1,6 @@
+const axios = require("axios");
+const { removeDuplicates } = require("../utils/functions");
+
 const getFiatList = async (req, res) => {
 	try {
 		const response = await axios.get(
@@ -21,7 +24,36 @@ const getFiatList = async (req, res) => {
 	}
 };
 
-const getCryptoList = async (req, res) => {};
+const getCryptoList = async (req, res) => {
+	try {
+		const response = await axios.get(
+			"https://pro-api.coinmarketcap.com/v1/cryptocurrency/map",
+			{
+				params: {
+					limit: 100,
+					sort: "cmc_rank",
+				},
+				headers: {
+					"X-CMC_PRO_API_KEY": process.env.COINMARKETCAP_API_KEY,
+				},
+			}
+		);
+
+		const resData = response.data.data;
+
+		const uniqueArray = removeDuplicates(resData, "id");
+
+		res.json({
+			data: uniqueArray,
+		});
+	} catch (error) {
+		console.log(error);
+		res.json({
+			error: true,
+			errorText: error.message,
+		});
+	}
+};
 
 const convertCryptoToFiat = async (req, res) => {};
 
